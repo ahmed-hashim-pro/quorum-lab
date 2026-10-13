@@ -195,7 +195,10 @@ rival must still win a majority. That usually takes a bridge partition, and
 it shows up about once in a thousand seeds. Figure 8 needs three leaders in
 the right order and a crash inside one round trip, about one seed in a
 hundred. `TestEveryBugIsCaught` fails if any bug stops being found within
-about twice the seeds it needs today.
+a fixed number of seeds. For the two rare bugs that bound is about twice
+what they need today (600 seeds for `commit-previous-term`, first caught at
+seed 258; 1500 for `forget-vote`, first caught at seed 674). The other four
+are caught within the first few seeds and get a bound of 50.
 
 The bugs are also pinned down by **directed unit tests** that construct each
 scenario message by message. `TestFigure8` replays Figure 8 from the paper:
@@ -206,8 +209,10 @@ scenario message by message. `TestFigure8` replays Figure 8 from the paper:
 
 ### What the simulator found in its own harness
 
-Two things turned up while building this. Both are now fixed, and both are
-the kind of mistake that a smaller test suite would have hidden.
+Two things turned up while building this. Both were fixed during
+development, so this is history: the current code can't reproduce either
+run. Both are the kind of mistake that a
+smaller test suite would have hidden.
 
 - **The checker was too strict.** The first Leader Completeness check
   demanded every committed entry in every new leader's log. A ring partition
