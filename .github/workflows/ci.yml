@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        go: ["1.22", stable]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go }}
+      - run: go vet ./...
+      - run: test -z "$(gofmt -l .)" || (gofmt -l . && exit 1)
+      - run: go test -race -short ./...
+      - run: go test ./...
+
+  # The README's two claims, at full size.
+  hunt:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+      - run: go build -o quorumlab ./cmd/quorumlab
+      - run: ./quorumlab hunt --seeds 20000
+      - run: ./quorumlab mutants --seeds 3000
+
+  # The pictures in docs/ must be what the current code draws.
+  docs-fresh:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+      - run: go build -o quorumlab ./cmd/quorumlab
+      - run: |
+          ./quorumlab run --seed 2 --svg docs/timeline.svg --from 0 --to 6000 > /dev/null
+          ./quorumlab run --seed 258 --bug commit-previous-term --svg docs/figure8.svg --from 3000 --to 4900 > /dev/null || true
+          git diff --exit-code -- docs
