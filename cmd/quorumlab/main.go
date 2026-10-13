@@ -212,7 +212,7 @@ func cmdMutants(args []string, out io.Writer) (int, error) {
 	fs := flag.NewFlagSet("mutants", flag.ContinueOnError)
 	var c common
 	c.register(fs)
-	seeds := fs.Int("seeds", 500, "seeds per variant (the correct build runs all of them)")
+	seeds := fs.Int("seeds", 5000, "seeds per variant (the correct build runs all of them)")
 	if err := parse(fs, args); err != nil {
 		return 0, err
 	}

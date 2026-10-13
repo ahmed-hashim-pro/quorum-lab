@@ -21,7 +21,7 @@ broken one.** So the repository also carries six known ways to get Raft
 wrong, each behind a switch, and the simulator has to catch every one:
 
 ```
-$ quorumlab mutants --seeds 5000
+$ quorumlab mutants
 variant                  result      first seed   caught as
 correct build            clean       -            5000 seeds, no violation
 vote-without-log-check   caught      1            leader completeness
